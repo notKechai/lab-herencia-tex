@@ -1,0 +1,165 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb}
+\usepackage[colorlinks=true, linkcolor=black, urlcolor=blue, citecolor=black]{hyperref}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage[spanish]{babel}
+
+\geometry{margin=1in}
+
+\title{Herencia, Clases Abstractas, Polimorfismo, Interfaces y MRO\\
+\large Informe — Programación II}
+\author{Paulo Villalobos \\ Profesor: Guido Mellado}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Este informe explica y ejemplifica los conceptos de Herencia, Clases Abstractas,
+Polimorfismo, Interfaces y Method Resolution Order (MRO) en Python, incluyendo
+ejemplos de código, una fórmula y recomendaciones sobre buenas prácticas de diseño.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introducción}
+En este informe se revisan los conceptos fundamentales de la orientación a objetos
+en Python y mecanismos relacionados como los Protocolos y el Duck Typing. Se incluyen
+ejemplos y una explicación del orden de resolución de métodos (MRO).
+
+\section{Herencia}
+En un problema textual, la herencia se identifica por la relación “es un/a”. 
+Por ejemplo, un Estudiante \textbf{es una} Persona, por lo tanto hereda sus atributos y métodos.
+
+La herencia permite que una clase (subclase) reutilice comportamiento y atributos
+definidos en otra (superclase). Ejemplo simple:
+
+\begin{verbatim}
+class Animal:
+    def __init__(self,nombre):
+        self.nombre = nombre
+    def dormir(self):
+        print(f"{self.nombre} está durmiendo")
+\end{verbatim}
+
+\subsection{Herencia múltiple}
+Python permite herencia múltiple: una clase puede heredar de varias. Hay que
+tener cuidado con el MRO para evitar ambigüedades.
+
+\section{Clases Abstractas}
+Las clases abstractas definen una interfaz parcial que obliga a las subclases a
+implementar ciertos métodos. Se usan con \texttt{abc.ABC} y \texttt{@abstractmethod}.
+
+\begin{verbatim}
+from abc import ABC, abstractmethod
+
+class Animal(ABC):
+    def __init__(self, nombre):
+        self.nombre = nombre
+
+    @abstractmethod
+    def hacer_sonido(self):
+        pass
+
+    def dormir(self):
+        print(f"{self.nombre} está durmiendo...")
+\end{verbatim}
+
+Ejemplo de implementación:
+\begin{verbatim}
+class Perro(Animal):
+    def hacer_sonido(self):
+        print("Guau!")
+\end{verbatim}
+
+\section{Polimorfismo}
+El polimorfismo permite que diferentes clases respondan al mismo mensaje
+(método) con comportamientos distintos. También puede referirse a extender
+métodos de la superclase usando \texttt{super()}.
+
+\begin{verbatim}
+class Persona:
+    def presentación(self) -> str:
+        return f"Hola, soy {self.nombre}"
+
+class Estudiante(Persona):
+    def __init__(self, nombre, carrera):
+        super().__init__(nombre)
+        self.carrera = carrera
+
+    def presentación(self) -> str:
+        base = super().presentación()
+        return f"{base} y estudio {self.carrera}"
+\end{verbatim}
+
+\section{Interfaces (simuladas en Python)}
+En Python se simula una interfaz usando clases abstractas donde todos los métodos
+son abstractos. Ejemplo: \texttt{Volador}.
+
+\begin{verbatim}
+from abc import ABC, abstractmethod
+
+class Volador(ABC):
+    @abstractmethod
+    def volar(self): pass
+
+    @abstractmethod
+    def aterrizar(self): pass
+\end{verbatim}
+
+\section{Protocolos y Duck Typing}
+Los Protocolos (módulo \texttt{typing}) permiten tipado estructural (duck typing).
+Si un objeto tiene los métodos esperados, puede usarse aunque no herede de una
+clase en particular.
+
+\begin{verbatim}
+from typing import Protocol
+
+class Nadador(Protocol):
+    def nadar(self) -> None: ...
+\end{verbatim}
+
+\subsection{Ejemplo Duck Typing}
+\begin{verbatim}
+class Pato:
+    def cuack(self): print("Cuac!")
+    def nadar(self): print("Estoy nadando")
+
+class Persona:
+    def cuack(self): print("Imito un cuac!")
+    def nadar(self): print("Me meto al agua…")
+\end{verbatim}
+
+\section{Method Resolution Order (MRO)}
+Explica cómo Python busca un método en la jerarquía de clases. Ejemplo:
+
+\begin{verbatim}
+class A: 
+    def saludo(self): print("Hola desde A")
+class B(A): pass
+class C(B): pass
+
+obj = C()
+obj.saludo()  # Busca en C, luego B, luego A
+\end{verbatim}
+
+En caso de herencia múltiple, el orden sigue la regla C3 linearization.
+
+\section{Fórmula de ejemplo}
+Ejemplo de fórmula simple (requerido por la guía):
+La fórmula del área del círculo:
+\[
+A = \pi r^2
+\]
+
+\section{Conclusión}
+En conclusión, estos conceptos permiten escribir programas más estructurados y reutilizables. 
+El uso de herencia, clases abstractas e interfaces ayuda a definir comportamientos comunes, 
+mientras que el polimorfismo y el MRO dan flexibilidad al diseño orientado a objetos en Python.
+
+\end{document}
